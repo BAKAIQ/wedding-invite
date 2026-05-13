@@ -28,10 +28,7 @@
     body {
       margin: 0;
       color: var(--text);
-      background:
-        linear-gradient(rgba(0,0,0,.58), rgba(0,0,0,.90)),
-        url('background-wedding.jpg') center center / cover fixed no-repeat,
-        linear-gradient(135deg, #000000 0%, #090909 38%, #020202 100%);
+      background: #000000;
       font-family: 'Cormorant Garamond', 'Times New Roman', serif;
       font-weight: 300;
       overflow-x: hidden;
@@ -43,12 +40,8 @@
       inset: 0;
       pointer-events: none;
       z-index: -2;
-      background:
-        radial-gradient(circle at 14% 38%, rgba(238,226,204,.08) 0 10px, transparent 11px),
-        radial-gradient(circle at 84% 38%, rgba(238,226,204,.06) 0 10px, transparent 11px),
-        linear-gradient(90deg, rgba(190,150,90,.04), transparent 18%, transparent 82%, rgba(190,150,90,.03));
-      opacity: .46;
-      backdrop-filter: blur(1.5px);
+      background: linear-gradient(180deg, rgba(255,255,255,.015), transparent 20%);
+      opacity: .5;
     }
 
     body::after {
@@ -58,10 +51,9 @@
       pointer-events: none;
       z-index: -1;
       background:
-        radial-gradient(ellipse at center, transparent 0 40%, rgba(0,0,0,.58) 100%),
-        linear-gradient(90deg, rgba(0,0,0,.26), transparent 20%, transparent 80%, rgba(0,0,0,.28)),
-        linear-gradient(180deg, rgba(255,255,255,.018), transparent 25%);
-      opacity: .92;
+        radial-gradient(ellipse at center, transparent 0 42%, rgba(0,0,0,.48) 100%),
+        linear-gradient(90deg, rgba(0,0,0,.22), transparent 20%, transparent 80%, rgba(0,0,0,.24));
+      opacity: .9;
     }
 
     .gold-dust {
@@ -119,20 +111,8 @@
 
     .page::before,
     .page::after {
-      content: "";
-      position: fixed;
-      top: 0;
-      width: 320px;
-      height: 100vh;
-      pointer-events: none;
-      z-index: -1;
-      opacity: .12;
-      background: radial-gradient(circle, rgba(255,255,255,.25) 0 2px, transparent 3px);
-      background-size: 80px 80px;
+      display: none;
     }
-
-    .page::before { left: -40px; }
-    .page::after { right: -70px; transform: scaleX(-1); }
 
     .top-title {
       text-align: center;
