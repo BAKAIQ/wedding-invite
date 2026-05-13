@@ -414,7 +414,7 @@
     }
 
     .event .desc {
-      font-size: 12px;
+      font-size: 15px;
       line-height: 1.35;
       color: #aaa095;
       max-width: 260px;
@@ -451,7 +451,7 @@
       display: block;
       text-decoration: none;
       color: var(--gold-light);
-      font-size: 12px;
+      font-size: 15px;
       margin-top: 8px;
     }
 
@@ -523,7 +523,7 @@
 
     label {
       display: block;
-      font-size: 10px;
+      font-size: 14px;
       text-transform: none;
       color: #766d69;
       margin: 12px 0 5px;
@@ -550,9 +550,9 @@
       border: 0;
       background: linear-gradient(180deg, rgba(198,165,106,.92), rgba(156,122,68,.92));
       color: #111;
-      height: 34px;
+      height: 42px;
       text-transform: none;
-      font-size: 10px;
+      font-size: 15px;
       font-family: 'Cormorant Garamond', 'Times New Roman', serif;
       cursor: pointer;
       transition: transform .25s ease, box-shadow .25s ease, filter .25s ease;
@@ -590,7 +590,7 @@
     }
 
     .unit {
-      font-size: 11px;
+      font-size: 14px;
       color: #706966;
     }
 
@@ -601,7 +601,7 @@
     }
 
     .survey-title {
-      font-size: 12px;
+      font-size: 15px;
       color: #5b5552;
       margin: 13px 0 7px;
     }
@@ -612,14 +612,14 @@
       align-items: center;
       margin: 4px 0;
       text-transform: none;
-      font-size: 12px;
+      font-size: 14px;
       color: #595451;
     }
 
     input[type="radio"], input[type="checkbox"] {
       accent-color: #f0cf86;
-      width: 12px;
-      height: 12px;
+      width: 15px;
+      height: 15px;
     }
 
     .wish { margin-top: 10px; }
@@ -688,7 +688,7 @@
       background: transparent;
       color: var(--gold-light);
       border-right: 1px solid rgba(198,165,106,.16);
-      font-size: 12px;
+      font-size: 14px;
       height: 38px;
     }
 
@@ -734,11 +734,11 @@
       }
 
       .section-title {
-        font-size: 30px;
+        font-size: 32px;
       }
 
       .big-date {
-        font-size: 28px;
+        font-size: 30px;
       }
 
       .event {
@@ -746,15 +746,15 @@
       }
 
       .event .time {
-        font-size: 26px;
+        font-size: 28px;
       }
 
       .event .label {
-        font-size: 15px;
+        font-size: 18px;
       }
 
       .event .desc {
-        font-size: 11px;
+        font-size: 14px;
       }
 
       .timeline {
@@ -767,28 +767,64 @@
       }
 
       .count-item {
-        width: 58px;
+        width: 64px;
       }
 
       .num {
-        width: 46px;
-        height: 46px;
-        font-size: 22px;
+        width: 50px;
+        height: 50px;
+        font-size: 24px;
       }
 
       .calendar-wrap {
         max-width: 100%;
       }
 
-      p {
+      .calendar {
+        font-size: 16px;
+      }
+
+      .month {
+        font-size: 42px;
+      }
+
+      label {
         font-size: 15px;
       }
+
+      input[type="text"],
+      input[type="number"] {
+        height: 42px;
+        font-size: 16px;
+      }
+
+      button {
+        height: 44px;
+        font-size: 15px;
+      }
+
+      .unit {
+        font-size: 13px;
+      }
+
+      .map-link {
+        font-size: 14px;
+      }
+
+      p {
+        font-size: 16px;
+        line-height: 1.6;
+      }
+    }
     }
   
 
   </style>
 </head>
 <body>
+  <audio id="bgMusic" loop playsinline preload="auto">
+    <source src="music.mp3" type="audio/mpeg">
+  </audio>
   
   
   <button class="music-toggle" id="musicToggle" aria-label="Музыка">
@@ -962,10 +998,7 @@
     setInterval(updateCountdown, 60000);
 
     const musicToggle = document.getElementById('musicToggle');
-    let musicOn = false;
-    let audioCtx = null;
-    let masterGain = null;
-    let oscillators = [];
+    const bgMusic = document.getElementById('bgMusic');
 
     function setMusicIcon(isPlaying) {
       if (!musicToggle) return;
@@ -973,63 +1006,26 @@
       musicToggle.setAttribute('aria-label', isPlaying ? 'Выключить музыку' : 'Включить музыку');
     }
 
-    function startSoftMusic() {
-      const AudioConstructor = window.AudioContext || window.webkitAudioContext;
-      if (!AudioConstructor) return;
+    if (musicToggle && bgMusic) {
+      bgMusic.volume = 0.55;
 
-      audioCtx = new AudioConstructor();
-      masterGain = audioCtx.createGain();
-      masterGain.gain.setValueAtTime(0.0001, audioCtx.currentTime);
-      masterGain.gain.exponentialRampToValueAtTime(0.035, audioCtx.currentTime + 1.2);
-      masterGain.connect(audioCtx.destination);
-
-      const notes = [261.63, 329.63, 392.00, 523.25];
-      oscillators = notes.map((freq, index) => {
-        const osc = audioCtx.createOscillator();
-        const gain = audioCtx.createGain();
-        osc.type = index === 0 ? 'sine' : 'triangle';
-        osc.frequency.value = freq;
-        gain.gain.value = index === 0 ? 0.45 : 0.16;
-        osc.connect(gain);
-        gain.connect(masterGain);
-        osc.start();
-        return osc;
-      });
-    }
-
-    function stopSoftMusic() {
-      if (masterGain && audioCtx) {
-        masterGain.gain.exponentialRampToValueAtTime(0.0001, audioCtx.currentTime + 0.35);
-      }
-      setTimeout(() => {
-        oscillators.forEach(osc => {
-          try { osc.stop(); } catch (e) {}
-        });
-        oscillators = [];
-        if (audioCtx) audioCtx.close();
-        audioCtx = null;
-        masterGain = null;
-      }, 420);
-    }
-
-    if (musicToggle) {
       musicToggle.addEventListener('click', async () => {
         try {
-          if (!musicOn) {
-            startSoftMusic();
-            musicOn = true;
+          if (bgMusic.paused) {
+            await bgMusic.play();
             setMusicIcon(true);
           } else {
-            stopSoftMusic();
-            musicOn = false;
+            bgMusic.pause();
             setMusicIcon(false);
           }
         } catch (e) {
-          musicOn = false;
-          setMusicIcon(false);
-          alert('Музыка не запустилась. Попробуйте нажать кнопку ещё раз.');
+          console.log(e);
+          alert('Музыка не запустилась. Попробуйте нажать ещё раз.');
         }
       });
+
+      bgMusic.addEventListener('pause', () => setMusicIcon(false));
+      bgMusic.addEventListener('play', () => setMusicIcon(true));
     }
 
     const dustWrap = document.getElementById('goldDust');
