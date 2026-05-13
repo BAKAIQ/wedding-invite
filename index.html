@@ -147,18 +147,10 @@
       inset: 0;
       pointer-events: none;
       background:
-        linear-gradient(115deg, transparent 0 24%, rgba(255,255,255,.035) 38%, transparent 54%),
-        linear-gradient(70deg, transparent 0 48%, rgba(224,194,122,.035) 62%, transparent 78%),
-        linear-gradient(180deg, rgba(224,194,122,.02), transparent 30%),
-        radial-gradient(circle at 18% 3%, rgba(198,165,106,.04) 0 9px, transparent 10px),
-        radial-gradient(circle at 88% 10%, rgba(198,165,106,.035) 0 12px, transparent 13px);
-      opacity: .9;
-      animation: silkInside 14s ease-in-out infinite alternate;
-    }
-
-    @keyframes silkInside {
-      from { transform: translateX(-2%) skewX(-1deg); }
-      to { transform: translateX(2%) skewX(1deg); }
+        linear-gradient(180deg, rgba(224,194,122,.015), transparent 24%),
+        radial-gradient(circle at 18% 3%, rgba(198,165,106,.025) 0 9px, transparent 10px),
+        radial-gradient(circle at 88% 10%, rgba(198,165,106,.02) 0 12px, transparent 13px);
+      opacity: .55;
     }
 
     section {
@@ -367,36 +359,39 @@
     }
 
     .timeline {
-      max-width: 310px;
-      margin: 14px auto 8px;
+      max-width: 360px;
+      margin: 18px auto 8px;
       position: relative;
-      padding: 8px 0;
+      padding: 4px 0;
     }
 
     .timeline::before {
-      content: "";
-      position: absolute;
-      top: 12px; bottom: 12px; left: 50%;
-      width: 1px;
-      background: linear-gradient(180deg, transparent, rgba(224,194,122,.28), transparent);
-      opacity: .44;
+      display: none;
     }
 
     .event {
-      display: grid;
-      grid-template-columns: 1fr 20px 1fr;
-      align-items: center;
-      min-height: 78px;
+      display: block;
+      min-height: auto;
       position: relative;
+      text-align: center;
+      padding: 18px 0;
+    }
+
+    .event::after {
+      content: "";
+      display: block;
+      width: 28px;
+      height: 1px;
+      margin: 16px auto 0;
+      background: linear-gradient(90deg, transparent, rgba(224,194,122,.45), transparent);
+    }
+
+    .event:last-child::after {
+      display: none;
     }
 
     .event .dot {
-      width: 5px; height: 5px;
-      background: rgba(224,194,122,.62);
-      border-radius: 50%;
-      margin: auto;
-      z-index: 2;
-      box-shadow: 0 0 8px rgba(224,194,122,.10);
+      display: none;
     }
 
     .event .time {
@@ -404,17 +399,17 @@
       color: var(--red);
       font-size: 32px;
       line-height: 1;
-      margin-bottom: 4px;
+      margin-bottom: 7px;
     }
 
     .event .label {
       font-family: 'Cormorant Garamond', 'Times New Roman', serif;
       text-transform: none;
-      font-size: 17px;
+      font-size: 18px;
       letter-spacing: .6px;
       line-height: 1;
       color: #f1e8d9;
-      margin-bottom: 5px;
+      margin-bottom: 7px;
       font-weight: 400;
     }
 
@@ -422,11 +417,16 @@
       font-size: 12px;
       line-height: 1.35;
       color: #aaa095;
+      max-width: 260px;
+      margin: 0 auto;
     }
 
-    .event.left .info { text-align: right; padding-right: 8px; }
-    .event.right .info { grid-column: 3; text-align: left; padding-left: 8px; }
-    .event.right .dot { grid-column: 2; }
+    .event.left .info,
+    .event.right .info {
+      text-align: center;
+      padding: 0;
+      grid-column: auto;
+    }
 
     .dress-colors {
       display: flex;
@@ -799,9 +799,7 @@
     </svg>
   </button>
 
-  <audio id="bgMusic" loop preload="none" playsinline>
-    <source src="https://cdn.pixabay.com/audio/2022/03/15/audio_c8a4e1c9f4.mp3" type="audio/mpeg">
-  </audio>
+  
 
   <div class="lang-switch" aria-label="Переключение языка">
     <button class="active" onclick="setLang('ru', this)">РУС</button><button onclick="setLang('kg', this)">КЫР</button>
@@ -964,43 +962,74 @@
     setInterval(updateCountdown, 60000);
 
     const musicToggle = document.getElementById('musicToggle');
-    const bgMusic = document.getElementById('bgMusic');
-    let musicStarted = false;
+    let musicOn = false;
+    let audioCtx = null;
+    let masterGain = null;
+    let oscillators = [];
 
-    if (musicToggle && bgMusic) {
-      bgMusic.volume = 0.55;
+    function setMusicIcon(isPlaying) {
+      if (!musicToggle) return;
+      musicToggle.classList.toggle('playing', isPlaying);
+      musicToggle.setAttribute('aria-label', isPlaying ? 'Выключить музыку' : 'Включить музыку');
+    }
 
-      function setMusicIcon(isPlaying) {
-        musicToggle.classList.toggle('playing', isPlaying);
-        musicToggle.setAttribute('aria-label', isPlaying ? 'Выключить музыку' : 'Включить музыку');
+    function startSoftMusic() {
+      const AudioConstructor = window.AudioContext || window.webkitAudioContext;
+      if (!AudioConstructor) return;
+
+      audioCtx = new AudioConstructor();
+      masterGain = audioCtx.createGain();
+      masterGain.gain.setValueAtTime(0.0001, audioCtx.currentTime);
+      masterGain.gain.exponentialRampToValueAtTime(0.035, audioCtx.currentTime + 1.2);
+      masterGain.connect(audioCtx.destination);
+
+      const notes = [261.63, 329.63, 392.00, 523.25];
+      oscillators = notes.map((freq, index) => {
+        const osc = audioCtx.createOscillator();
+        const gain = audioCtx.createGain();
+        osc.type = index === 0 ? 'sine' : 'triangle';
+        osc.frequency.value = freq;
+        gain.gain.value = index === 0 ? 0.45 : 0.16;
+        osc.connect(gain);
+        gain.connect(masterGain);
+        osc.start();
+        return osc;
+      });
+    }
+
+    function stopSoftMusic() {
+      if (masterGain && audioCtx) {
+        masterGain.gain.exponentialRampToValueAtTime(0.0001, audioCtx.currentTime + 0.35);
       }
+      setTimeout(() => {
+        oscillators.forEach(osc => {
+          try { osc.stop(); } catch (e) {}
+        });
+        oscillators = [];
+        if (audioCtx) audioCtx.close();
+        audioCtx = null;
+        masterGain = null;
+      }, 420);
+    }
 
-      musicToggle.addEventListener('touchend', (event) => {
-        event.preventDefault();
-        musicToggle.click();
-      }, { passive: false });
-
+    if (musicToggle) {
       musicToggle.addEventListener('click', async () => {
         try {
-          if (bgMusic.paused) {
-            bgMusic.load();
-            const playPromise = bgMusic.play();
-            if (playPromise !== undefined) await playPromise;
-            musicStarted = true;
+          if (!musicOn) {
+            startSoftMusic();
+            musicOn = true;
             setMusicIcon(true);
           } else {
-            bgMusic.pause();
+            stopSoftMusic();
+            musicOn = false;
             setMusicIcon(false);
           }
         } catch (e) {
-          musicStarted = false;
+          musicOn = false;
           setMusicIcon(false);
-          alert('Нажмите ещё раз, чтобы включить музыку. На некоторых телефонах браузер блокирует первый запуск.');
+          alert('Музыка не запустилась. Попробуйте нажать кнопку ещё раз.');
         }
       });
-
-      bgMusic.addEventListener('pause', () => setMusicIcon(false));
-      bgMusic.addEventListener('play', () => setMusicIcon(true));
     }
 
     const dustWrap = document.getElementById('goldDust');
