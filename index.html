@@ -179,47 +179,36 @@
     }
 
     .hero-cover .love {
-      margin: auto 0 0;
-    }
-
-    .hero-date {
-      margin: auto 0 0;
-      padding-bottom: 6px;
-      font-size: 30px;
-      color: var(--gold-light);
-      letter-spacing: .8px;
-    }
-
-    .guest-section {
-      padding-top: 58px;
-    }
-
-    .location-section {
-      padding-top: 46px;
-    }
-
-    .script-small {
       font-family: 'Cormorant Garamond', 'Times New Roman', serif;
-      font-size: 34px;
-      line-height: 1;
-      color: var(--dark);
-      transform: rotate(-7deg);
-      margin-bottom: -4px;
-    }
-
-    .love {
-      font-family: 'Cormorant Garamond', 'Times New Roman', serif;
-      font-size: 102px;
-      line-height: 1.04;
-      letter-spacing: 1.2px;
+      font-size: 82px;
+      line-height: 1.08;
+      letter-spacing: 1.6px;
       font-weight: 300;
       text-transform: none;
-      margin: 10px auto 14px;
-      background: linear-gradient(180deg, #ffffff 0%, #fbf4e6 64%, #f2d38d 100%);
+      margin: 10px auto 18px;
+      background: linear-gradient(180deg, #ffffff 0%, #fff7e6 68%, #f0cf86 100%);
       -webkit-background-clip: text;
       -webkit-text-fill-color: transparent;
-      text-shadow: 0 0 18px rgba(255,255,255,.10), 0 0 10px rgba(224,194,122,.04);
+      text-shadow:
+        0 0 10px rgba(255,255,255,.10),
+        0 0 22px rgba(240,207,134,.10);
+      animation: elegantNameGlow 5.2s ease-in-out infinite;
       font-style: normal;
+    }
+
+    @keyframes elegantNameGlow {
+      0%, 100% {
+        filter: drop-shadow(0 0 4px rgba(255,255,255,.06));
+        text-shadow:
+          0 0 10px rgba(255,255,255,.08),
+          0 0 18px rgba(240,207,134,.08);
+      }
+      50% {
+        filter: drop-shadow(0 0 9px rgba(240,207,134,.16));
+        text-shadow:
+          0 0 14px rgba(255,255,255,.12),
+          0 0 30px rgba(240,207,134,.16);
+      }
     }
 
     .script-over {
@@ -481,40 +470,36 @@
 
     .qr-code-frame {
       position: relative;
-      padding: 16px;
-      border-radius: 28px;
-      background: linear-gradient(145deg, rgba(252,248,236,.98), rgba(234,222,199,.96));
-      border: 1px solid rgba(240,207,134,.34);
+      padding: 10px;
+      border-radius: 24px;
+      background: rgba(255,255,255,.98);
       box-shadow:
-        0 20px 48px rgba(0,0,0,.34),
-        inset 0 1px 0 rgba(255,255,255,.72),
-        0 0 20px rgba(240,207,134,.08);
+        0 14px 34px rgba(0,0,0,.34),
+        0 2px 10px rgba(255,255,255,.04);
       overflow: hidden;
-      transition: transform .35s ease, box-shadow .35s ease, border-color .35s ease;
+      transition: transform .35s ease, box-shadow .35s ease;
     }
 
     .qr-code-frame:hover {
-      transform: translateY(-2px);
-      border-color: rgba(240,207,134,.48);
+      transform: translateY(-2px) scale(1.01);
       box-shadow:
-        0 24px 54px rgba(0,0,0,.38),
-        inset 0 1px 0 rgba(255,255,255,.72),
-        0 0 22px rgba(240,207,134,.12);
+        0 18px 42px rgba(0,0,0,.42),
+        0 2px 12px rgba(255,255,255,.06);
     }
 
     .qr-code-frame::before {
       content: "";
       position: absolute;
-      inset: 1px;
-      border-radius: 27px;
-      border: 1px solid rgba(255,255,255,.35);
+      inset: 0;
+      border-radius: 24px;
+      background: linear-gradient(180deg, rgba(255,255,255,.10), transparent 30%);
       pointer-events: none;
     }
 
     .qr-code-img {
       width: 158px;
       height: 158px;
-      border-radius: 18px;
+      border-radius: 16px;
       background: white;
       display: block;
       object-fit: contain;
@@ -729,9 +714,10 @@
 
     section::before { content: none; }
 
-    @media (max-width: 480px) {$1.love {
-        font-size: 68px;
-        line-height: .98;
+    @media (max-width: 480px) {
+      .love {
+        font-size: 56px;
+        line-height: 1.06;
       }
 
       .hero-cover {
@@ -842,7 +828,7 @@
         <h2 class="section-title" data-ru="Место проведения" data-kg="Өтүүчү жери">Место проведения</h2>
         <p data-ru="Archa banquet hall, улица Молдокулова, 60, Бишкек. Начало в 16:00." data-kg="Archa banquet hall, Молдокулов көчөсү, 60, Бишкек. Башталышы 16:00дө.">Archa banquet hall, улица Молдокулова, 60, Бишкек. Начало в 16:00.</p>
         <a class="map-link" href="https://go.2gis.com/0mXFi" target="_blank" rel="noopener">
-          <span data-ru="Открыть адрес в 2ГИС" data-kg="Даректи 2ГИСтен ачуу">Открыть адрес в 2ГИС</span>
+          <span data-ru="Открыть локацию" data-kg="Локацияны ачуу">Открыть локацию</span>
           <div class="qr-wrap">
             <div class="qr-code-frame">
             <img
